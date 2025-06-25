@@ -121,3 +121,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+.titlebar {
+  -webkit-app-region: drag;
+}
+
+.non-draggable {
+  -webkit-app-region: no-drag;
+}

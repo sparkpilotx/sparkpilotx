@@ -15,6 +15,10 @@ This project uses a `shared` directory to store code accessible by both the main
   - **Purpose**: Contains shared TypeScript type definitions.
   - **Usage**: Use these types in both main and renderer code to ensure data consistency. For example, the `Theme` type is defined here.
 
+- **`src/shared/constants.ts`**: [constants.ts](mdc:src/shared/constants.ts)
+  - **Purpose**: Stores shared constants used throughout the application.
+  - **Usage**: Import constants from this file to ensure consistency and avoid magic values in the codebase.
+
 ## Configuration
 
 To enable path aliasing for the shared directory (`@shared/*`), the following configuration files have been updated:

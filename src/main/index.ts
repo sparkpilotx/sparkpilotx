@@ -1,28 +1,10 @@
-import { app, shell, BrowserWindow, ipcMain, nativeTheme, WebFrameMain } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { IPC_EVENTS } from '@shared/ipc-events'
-import { Theme } from '@shared/types'
+import { registerIpcHandlers } from './ipc'
 
 const RENDERER_URL = process.env['ELECTRON_RENDERER_URL']
-
-const validateSender = (frame: WebFrameMain): boolean => {
-  if (!RENDERER_URL) {
-    // In production, only 'file://' protocol is allowed
-    return frame.url.startsWith('file://')
-  }
-
-  // In development, the origin of the sender's URL must match the dev server's URL
-  try {
-    const frameUrl = new URL(frame.url)
-    const rendererUrl = new URL(RENDERER_URL)
-    return frameUrl.origin === rendererUrl.origin
-  } catch (e) {
-    console.error('Failed to parse sender URL:', e)
-    return false
-  }
-}
 
 function createWindow(): void {
   // Create the browser window.
@@ -32,9 +14,12 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
+    titleBarStyle: 'hidden',
+    titleBarOverlay: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      nodeIntegrationInWorker: true
     }
   })
 
@@ -54,16 +39,6 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-
-  // Set theme based on renderer's choice
-  ipcMain.handle(IPC_EVENTS.THEME_SET, (event, theme: Theme) => {
-    if (!event.senderFrame || !validateSender(event.senderFrame)) {
-      const senderUrl = event.senderFrame?.url || 'unknown'
-      console.warn(`Blocked '${IPC_EVENTS.THEME_SET}' from un-trusted source: ${senderUrl}`)
-      return
-    }
-    nativeTheme.themeSource = theme
-  })
 }
 
 // This method will be called when Electron has finished
@@ -73,9 +48,6 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('io.ai-copilots.sparkpilotx')
 
-  console.log(import.meta.env.MAIN_VITE_APP_NAME)
-  console.log(import.meta.env.VITE_API_VERSION)
-
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -83,8 +55,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on(IPC_EVENTS.PING, () => console.log('pong'))
+  registerIpcHandlers()
 
   createWindow()
 
