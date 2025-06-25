@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Shared Code Usage
+
+This project uses a `shared` directory to store code accessible by both the main and renderer processes. This prevents code duplication and ensures type safety across the application.
+
+- **`src/shared/ipc-events.ts`**: [ipc-events.ts](mdc:src/shared/ipc-events.ts)
+  - **Purpose**: Centralizes all Inter-Process Communication (IPC) channel names.
+  - **Usage**: Always import IPC event names from this file instead of using raw strings to avoid typos and facilitate maintenance.
+
+- **`src/shared/types.ts`**: [types.ts](mdc:src/shared/types.ts)
+  - **Purpose**: Contains shared TypeScript type definitions.
+  - **Usage**: Use these types in both main and renderer code to ensure data consistency. For example, the `Theme` type is defined here.
+
+## Configuration
+
+To enable path aliasing for the shared directory (`@shared/*`), the following configuration files have been updated:
+
+- `tsconfig.node.json`: [tsconfig.node.json](mdc:tsconfig.node.json)
+- `tsconfig.web.json`: [tsconfig.web.json](mdc:tsconfig.web.json)
+- `electron.vite.config.ts`: [electron.vite.config.ts](mdc:electron.vite.config.ts)
+- `vite.config.ts`: [vite.config.ts](mdc:vite.config.ts)

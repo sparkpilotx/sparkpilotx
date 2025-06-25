@@ -1,9 +1,21 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
-  "include": ["electron.vite.config.*", "vite.config.ts", "src/main/**/*", "src/preload/**/*", "src/main/env.d.ts", "src/preload/env.d.ts"],
+  "include": [
+    "electron.vite.config.*",
+    "vite.config.ts",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "src/shared/**/*",
+    "src/main/env.d.ts",
+    "src/preload/env.d.ts"
+  ],
   "compilerOptions": {
     "composite": true,
     "moduleResolution": "bundler",
-    "types": ["electron-vite/node"]
+    "types": ["electron-vite/node"],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["src/shared/*"]
+    }
   }
 }

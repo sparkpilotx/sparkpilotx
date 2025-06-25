@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
-
-type Theme = "dark" | "light" | "system"
+import { type Theme } from "@shared/types"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -38,6 +37,7 @@ export function ThemeProvider({
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       const systemTheme = mediaQuery.matches ? 'dark' : 'light'
       root.classList.add(systemTheme)
+      window.api.setTheme('system')
 
       const handleChange = (e: MediaQueryListEvent): void => {
         const newSystemTheme = e.matches ? 'dark' : 'light'
@@ -50,6 +50,8 @@ export function ThemeProvider({
     }
 
     root.classList.add(theme)
+    window.api.setTheme(theme)
+
     return (): void => {}
   }, [theme])
 
@@ -58,6 +60,7 @@ export function ThemeProvider({
     setTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme)
       setTheme(theme)
+      window.api.setTheme(theme)
     },
   }
 
