@@ -5,6 +5,7 @@
   "main": "./out/main/index.js",
   "author": "sparkpilotx@gmail.com",
   "homepage": "https://github.com/sparkpilotx/sparkpilotx",
+  "repository": "https://github.com/sparkpilotx/sparkpilotx",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
