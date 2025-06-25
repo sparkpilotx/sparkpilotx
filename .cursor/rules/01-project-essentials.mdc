@@ -40,7 +40,7 @@ The project's behavior is defined by these central configuration files:
 
 ## UI and Styling
 
-The UI is built using **[shadcn/ui](mdc:https:/ui.shadcn.com)**, a collection of re-usable components, and styled with **[Tailwind CSS](mdc:https:/tailwindcss.com)**.
+The UI is built using **[shadcn/ui](mdc:https:/ui.shadcn.com)**, a collection of re-usable components, and styled with **[Tailwind CSS v4](mdc:https:/tailwindcss.com)**.
 
 - **`shadcn/ui` configuration**: [components.json](mdc:components.json)
 - **`cn` utility for class merging**: [`@/lib/utils`](mdc:src/renderer/src/lib/utils.ts)
