@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: io.ai-copilots.sparkpilotx
 productName: sparkpilotx
 directories:
   buildResources: build
