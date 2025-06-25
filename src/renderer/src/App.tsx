@@ -8,7 +8,7 @@ function App(): React.JSX.Element {
     <>
       <img alt="logo" className="logo" src={electronLogo} />
       <div className="creator">Powered by electron-vite</div>
-      <div className="text">
+      <div className="py-4 text-center text-3xl font-bold underline">
         Build an Electron app with <span className="react">React</span>
         &nbsp;and <span className="ts">TypeScript</span>
       </div>

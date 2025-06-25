@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @import './base.css';
 
 body {
@@ -53,16 +54,6 @@ code {
   color: var(--ev-c-text-2);
   font-weight: 600;
   margin-bottom: 10px;
-}
-
-.text {
-  font-size: 28px;
-  color: var(--ev-c-text-1);
-  font-weight: 700;
-  line-height: 32px;
-  text-align: center;
-  margin: 0 10px;
-  padding: 16px 0;
 }
 
 .tip {
@@ -152,9 +143,6 @@ code {
 }
 
 @media (max-width: 720px) {
-  .text {
-    font-size: 20px;
-  }
 }
 
 @media (max-width: 620px) {
