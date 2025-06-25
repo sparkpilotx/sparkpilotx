@@ -1,0 +1,23 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Environment Variable Configuration
+
+This project uses environment variables prefixed with `MAIN_VITE_`, `PRELOAD_VITE_`, `RENDERER_VITE_`, and a common `VITE_` for variables accessible in all processes.
+
+## Configuration Files
+
+- **Main & Preload**: Prefixes are defined in [`electron.vite.config.ts`](mdc:electron.vite.config.ts).
+- **Renderer**: The prefix is defined in [`vite.config.ts`](mdc:vite.config.ts).
+
+## TypeScript Integration
+
+To ensure type safety, environment variables must be declared in TypeScript definition files:
+
+- **Main**: [`src/main/env.d.ts`](mdc:src/main/env.d.ts)
+- **Preload**: [`src/preload/env.d.ts`](mdc:src/preload/env.d.ts)
+- **Renderer**: [`src/renderer/src/env.d.ts`](mdc:src/renderer/src/env.d.ts)
+
+These definition files are included in their respective TypeScript configurations, [`tsconfig.node.json`](mdc:tsconfig.node.json) and [`tsconfig.web.json`](mdc:tsconfig.web.json).

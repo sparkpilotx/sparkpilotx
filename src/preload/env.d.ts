@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly RENDERER_VITE_WEBSITE_URL: string
+  readonly PRELOAD_VITE_API_KEY: string
   readonly VITE_API_VERSION: string
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
-}
+} 

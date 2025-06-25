@@ -9,5 +9,6 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src/renderer/src')
     }
-  }
+  },
+  envPrefix: ['RENDERER_VITE_', 'VITE_']
 }) 

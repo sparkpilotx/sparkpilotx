@@ -14,6 +14,9 @@ import { Code, ExternalLink } from 'lucide-react'
 function App(): React.JSX.Element {
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
+  console.log(import.meta.env.RENDERER_VITE_WEBSITE_URL)
+  console.log(import.meta.env.VITE_API_VERSION)
+
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <Card className="w-[480px]">

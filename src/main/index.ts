@@ -42,6 +42,9 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('io.ai-copilots.sparkpilotx')
 
+  console.log(import.meta.env.MAIN_VITE_APP_NAME)
+  console.log(import.meta.env.VITE_API_VERSION)
+
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils

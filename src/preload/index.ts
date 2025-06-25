@@ -11,6 +11,9 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+
+    console.log(import.meta.env.PRELOAD_VITE_API_KEY)
+    console.log(import.meta.env.VITE_API_VERSION)
   } catch (error) {
     console.error(error)
   }
