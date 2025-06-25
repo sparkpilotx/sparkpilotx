@@ -38,5 +38,13 @@ The project's behavior is defined by these central configuration files:
 - **`tsconfig.web.json`**: [tsconfig.web.json](mdc:tsconfig.web.json)
 - **`eslint.config.mjs`**: [eslint.config.mjs](mdc:eslint.config.mjs)
 
+## UI and Styling
+
+The UI is built using **[shadcn/ui](mdc:https:/ui.shadcn.com)**, a collection of re-usable components, and styled with **[Tailwind CSS](mdc:https:/tailwindcss.com)**.
+
+- **`shadcn/ui` configuration**: [components.json](mdc:components.json)
+- **`cn` utility for class merging**: [`@/lib/utils`](mdc:src/renderer/src/lib/utils.ts)
+- **Core `shadcn/ui` dependencies**: `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`, `tw-animate-css`
+
 ## Native Application Context
 This is a native desktop application built with Electron, not a traditional web application. While it uses web technologies like React and TypeScript, all code should be written with the native desktop environment in mind. For example, you have access to Node.js APIs in the main process and can interact with the user's operating system.
