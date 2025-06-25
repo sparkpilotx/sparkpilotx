@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Essentials
+
+This project is built with the following core technologies:
+
+- **Electron**: [electron](mdc:package.json) `37`
+- **React**: [react](mdc:package.json) `19`
+- **TypeScript**: [typescript](mdc:package.json) `5`
+- **Vite**: [vite](mdc:package.json) `6`
+- **Electron Vite**: [electron-vite](mdc:package.json) `3`
+- **Electron Builder**: [electron-builder](mdc:package.json) `26`
+
+This rule file helps in understanding the fundamental technologies used in this project.
+
+## Tooling
+
+This project utilizes `@electron-toolkit` to streamline development:
+
+- **@electron-toolkit/preload**: [`@electron-toolkit/preload`](mdc:package.json) `3`
+- **@electron-toolkit/utils**: [`@electron-toolkit/utils`](mdc:package.json) `4`
+- **@electron-toolkit/eslint-config-prettier**: [`@electron-toolkit/eslint-config-prettier`](mdc:package.json) `3`
+- **@electron-toolkit/eslint-config-ts**: [`@electron-toolkit/eslint-config-ts`](mdc:package.json) `3`
+- **@electron-toolkit/tsconfig**: [`@electron-toolkit/tsconfig`](mdc:package.json) `1`
+
+## Core Configuration
+
+The project's behavior is defined by these central configuration files:
+
+- **`package.json`**: [package.json](mdc:package.json)
+- **`electron-builder.yml`**: [electron-builder.yml](mdc:electron-builder.yml)
+- **`electron.vite.config.ts`**: [electron.vite.config.ts](mdc:electron.vite.config.ts)
+- **`tsconfig.json`**: [tsconfig.json](mdc:tsconfig.json)
+- **`tsconfig.node.json`**: [tsconfig.node.json](mdc:tsconfig.node.json)
+- **`tsconfig.web.json`**: [tsconfig.web.json](mdc:tsconfig.web.json)
+- **`eslint.config.mjs`**: [eslint.config.mjs](mdc:eslint.config.mjs)
+
+## Native Application Context
+This is a native desktop application built with Electron, not a traditional web application. While it uses web technologies like React and TypeScript, all code should be written with the native desktop environment in mind. For example, you have access to Node.js APIs in the main process and can interact with the user's operating system.

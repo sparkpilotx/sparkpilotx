@@ -1,0 +1,17 @@
+---
+description: 
+globs: .cursor/rules/**/*.mdc
+alwaysApply: false
+---
+# Guidelines for Creating Cursor Rules
+
+When creating or editing rules for this project, please follow these guidelines to ensure they are effective and concise:
+
+1.  **Prioritize Brevity**: Language models have a fixed context size. Keep rules short and to the point.
+2.  **Focus on Project-Specific Context**: Only include information that is specific to this project and that an AI would not know by default.
+    *   **Good Example**: "This project uses Electron version `37`."
+    *   **Bad Example**: "Electron is a framework for building desktop apps with web technologies." (The AI already knows this).
+3.  **Omit General Knowledge**: Do not add explanations for common technologies, libraries, or programming concepts. The AI assistant is already trained on this information.
+4.  **Keep it Maintainable**: For package versions, prefer using only the major version number to avoid frequent updates (e.g., `19` instead of `19.1.0`).
+
+The goal is to provide a dense, high-signal context to the AI, not to write a comprehensive project encyclopedia.
