@@ -1,6 +1,5 @@
 import Versions from '@/components/versions'
 import electronLogo from '@/assets/electron.svg'
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -9,52 +8,67 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
-import { Code, ExternalLink } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { ThemeProvider } from '@/components/theme-provider'
+import { ModeToggle } from '@/components/mode-toggle'
 
 function App(): React.JSX.Element {
   const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
-  console.log(import.meta.env.RENDERER_VITE_WEBSITE_URL)
-  console.log(import.meta.env.VITE_API_VERSION)
-
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center">
-      <Card className="w-[480px]">
-        <CardHeader className="items-center text-center">
-          <img alt="logo" className="mb-4 h-24 w-24" src={electronLogo} />
-          <CardTitle className="text-2xl">
-            Build an Electron app with{' '}
-            <span className="bg-gradient-to-r from-teal-500 to-indigo-500 bg-clip-text font-bold text-transparent">
-              React
-            </span>
-            {' & '}
-            <span className="bg-gradient-to-r from-blue-600 to-yellow-400 bg-clip-text font-bold text-transparent">
-              TypeScript
-            </span>
-          </CardTitle>
-          <CardDescription>Powered by electron-vite and shadcn/ui</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
-          <Button asChild variant="outline">
-            <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Documentation
-            </a>
-          </Button>
-          <Button onClick={ipcHandle}>
-            <Code className="mr-2 h-4 w-4" />
-            Send IPC
-          </Button>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            Please try pressing{' '}
-            <code className="rounded bg-muted px-1 py-0.5 font-mono">F12</code> to open the devTool
-          </p>
-        </CardFooter>
-      </Card>
-      <Versions />
-    </div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="container relative h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-1 lg:px-0">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>SparkPilotX</CardTitle>
+                <ModeToggle />
+              </div>
+              <CardDescription>
+                Your intelligent companion for seamless development and automation.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <div className="flex items-center justify-center">
+                  <img src={electronLogo} className="w-32" alt="logo" />
+                </div>
+                <p>
+                  An app built with{' '}
+                  <span className="text-teal-500 dark:text-teal-400">React</span>,{' '}
+                  <span className="text-blue-500 dark:text-blue-400">TypeScript</span>,{' '}
+                  <span className="text-purple-500 dark:text-purple-400">Vite</span> and{' '}
+                  <span className="text-gray-500 dark:text-gray-400">Electron</span>.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Edit <code>src/renderer/src/app.tsx</code> and save to test HMR
+                </p>
+              </div>
+
+              <div className="my-4">
+                <Separator />
+              </div>
+
+              <div className="flex flex-col space-y-2 text-center text-sm">
+                <p className="text-gray-500 dark:text-gray-400">
+                  Ping Preload scripts
+                  <button
+                    className="ml-2 rounded-md bg-blue-500 px-2 py-1 text-white"
+                    onClick={ipcHandle}
+                  >
+                    Ping
+                  </button>
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Versions />
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </ThemeProvider>
   )
 }
 
