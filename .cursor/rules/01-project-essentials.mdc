@@ -33,6 +33,7 @@ The project's behavior is defined by these central configuration files:
 - **`package.json`**: [package.json](mdc:package.json)
 - **`electron-builder.yml`**: [electron-builder.yml](mdc:electron-builder.yml)
 - **`electron.vite.config.ts`**: [electron.vite.config.ts](mdc:electron.vite.config.ts)
+- **`vite.config.ts`**: [vite.config.ts](mdc:vite.config.ts)
 - **`tsconfig.json`**: [tsconfig.json](mdc:tsconfig.json)
 - **`tsconfig.node.json`**: [tsconfig.node.json](mdc:tsconfig.node.json)
 - **`tsconfig.web.json`**: [tsconfig.web.json](mdc:tsconfig.web.json)
