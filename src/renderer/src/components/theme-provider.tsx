@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { type ThemeInfo } from "@shared/types"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -28,37 +27,26 @@ export function ThemeProvider({
     root.classList.add(effectiveTheme)
   }, [effectiveTheme])
 
-  // Initialize theme and listen for native theme updates
+  // Initialize theme and listen for system theme updates using CSS media query
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined
-
-    const initializeTheme = async (): Promise<void> => {
-      try {
-        // Get initial theme info from main process
-        const themeInfo = await window.api.getNativeTheme()
-        
-        // Set effective theme based on system preference
-        const newEffectiveTheme = themeInfo.shouldUseDarkColors ? 'dark' : 'light'
-        setEffectiveTheme(newEffectiveTheme)
-
-        // Listen for native theme changes
-        unsubscribe = window.api.onThemeUpdated((themeInfo: ThemeInfo) => {
-          const newEffectiveTheme = themeInfo.shouldUseDarkColors ? 'dark' : 'light'
-          setEffectiveTheme(newEffectiveTheme)
-        })
-      } catch (error) {
-        console.error('Failed to initialize theme:', error)
-        // Fallback to light theme
-        setEffectiveTheme('light')
-      }
+    // Get initial theme from CSS media query
+    const getSystemTheme = (): 'light' | 'dark' => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
 
-    initializeTheme()
+    // Set initial theme
+    setEffectiveTheme(getSystemTheme())
 
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleThemeChange = (e: MediaQueryListEvent) => {
+      setEffectiveTheme(e.matches ? 'dark' : 'light')
+    }
+
+    mediaQuery.addEventListener('change', handleThemeChange)
+    
     return () => {
-      if (unsubscribe) {
-        unsubscribe()
-      }
+      mediaQuery.removeEventListener('change', handleThemeChange)
     }
   }, [])
 

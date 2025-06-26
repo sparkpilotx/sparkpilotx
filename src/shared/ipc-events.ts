@@ -1,4 +1,4 @@
 export enum IpcEvents {
-  GetTheme = 'theme:get',
-  ThemeUpdated = 'theme:updated',
+  // Theme-related events removed as we now use CSS media queries
+  // Add other IPC events here as needed
 }

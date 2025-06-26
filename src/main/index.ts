@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -21,6 +21,8 @@ function createWindow(): void {
     titleBarOverlay: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
       sandbox: false,
       nodeIntegrationInWorker: true
     }
@@ -64,6 +66,9 @@ if (!app.requestSingleInstanceLock()) {
 
     // Set app user model id for windows
     electronApp.setAppUserModelId('io.ai-copilots.sparkpilotx')
+
+    // Ensure native controls follow system theme
+    nativeTheme.themeSource = 'system'
 
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.

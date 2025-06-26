@@ -1,17 +1,9 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-import { ThemeInfo } from '@shared/types'
-import { IpcEvents } from '@shared/ipc-events'
-
 const customApi = {
-  getNativeTheme: (): Promise<ThemeInfo> => electronAPI.ipcRenderer.invoke(IpcEvents.GetTheme),
-  onThemeUpdated: (callback: (themeInfo: ThemeInfo) => void): (() => void) => {
-    const unsubscribe = electronAPI.ipcRenderer.on(IpcEvents.ThemeUpdated, (_, themeInfo: ThemeInfo) => {
-      callback(themeInfo)
-    })
-    return () => unsubscribe()
-  }
+  // Theme-related APIs removed as we now use CSS media queries
+  // Add other custom APIs here as needed
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

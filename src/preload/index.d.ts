@@ -1,12 +1,10 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 
-import { ThemeInfo } from '@shared/types'
-
 declare global {
   interface Window {
     api: ElectronAPI & {
-      getNativeTheme: () => Promise<ThemeInfo>
-      onThemeUpdated: (callback: (themeInfo: ThemeInfo) => void) => () => void
+      // Theme-related APIs removed as we now use CSS media queries
+      // Add other custom API types here as needed
     }
   }
 }

@@ -1,5 +1,3 @@
-import { registerThemeHandler } from './theme'
-
 // Store cleanup functions for all handlers
 const handlerCleanups: (() => void)[] = []
 
@@ -8,11 +6,10 @@ export function registerIpcHandlers(): void {
   unregisterIpcHandlers()
   
   // Register all handlers and store their cleanup functions
-  handlerCleanups.push(
-    registerThemeHandler()
-    // Add more handlers here as they're created
-    // handlerCleanups.push(registerOtherHandler())
-  )
+  // Note: Theme handler removed as we now use CSS media queries in renderer
+  // handlerCleanups.push(
+  //   // Add more handlers here as they're created
+  // )
 }
 
 export function unregisterIpcHandlers(): void {
