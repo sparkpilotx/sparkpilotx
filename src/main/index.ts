@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { registerIpcHandlers } from './ipc'
+import { registerIpcHandlers, unregisterIpcHandlers } from './ipc'
 import { initializeGlobalProxy } from './config/proxy'
 
 const RENDERER_URL = process.env['ELECTRON_RENDERER_URL']
@@ -90,6 +90,15 @@ if (!app.requestSingleInstanceLock()) {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
+  }
+})
+
+// Clean up IPC handlers before the app quits
+app.on('before-quit', () => {
+  try {
+    unregisterIpcHandlers()
+  } catch (error) {
+    console.error('Error during IPC cleanup on app quit:', error)
   }
 })
 
