@@ -10,11 +10,40 @@ const customApi = {
   },
   
   // Version API
-  getVersions: () => ({
-    electron: process.versions.electron,
-    node: process.versions.node,
-    chrome: process.versions.chrome
-  })
+  getVersions: () => {
+    // Helper function to get package version
+    const getPackageVersion = (packageName: string): string => {
+      try {
+        // Try different path approaches
+        let packageJson
+        try {
+          packageJson = require(`../../node_modules/${packageName}/package.json`)
+        } catch {
+          try {
+            packageJson = require(`../../../node_modules/${packageName}/package.json`)
+          } catch {
+            try {
+              packageJson = require(`${packageName}/package.json`)
+            } catch {
+              return 'N/A'
+            }
+          }
+        }
+        return packageJson.version
+      } catch {
+        return 'N/A'
+      }
+    }
+
+    return {
+      electron: process.versions.electron,
+      node: process.versions.node,
+      chrome: process.versions.chrome,
+      openai: getPackageVersion('openai'),
+      anthropic: getPackageVersion('@anthropic-ai/sdk'),
+      genai: getPackageVersion('@google/genai')
+    }
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

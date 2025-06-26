@@ -11,6 +11,9 @@ declare global {
         electron: string
         node: string
         chrome: string
+        openai: string
+        anthropic: string
+        genai: string
       }
     }
   }

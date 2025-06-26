@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
-import { X, Info, Settings as SettingsIcon } from 'lucide-react'
+import { X, Info, Settings as SettingsIcon, Sparkles, Monitor, Cpu } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Separator } from './ui/separator'
+import { Badge } from './ui/badge'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 interface SettingsProps {
   isOpen: boolean
@@ -50,47 +53,133 @@ export function Settings({ isOpen, onClose }: SettingsProps): React.JSX.Element 
     switch (activeTab) {
       case 'about':
         return (
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-medium mb-4">Version Information</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="font-medium">Electron</p>
-                    <p className="text-sm text-muted-foreground">
-                      Framework version
-                    </p>
-                  </div>
-                  <div className="text-sm font-mono text-muted-foreground">
-                    v{versions.electron}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="font-medium">Node.js</p>
-                    <p className="text-sm text-muted-foreground">
-                      JavaScript runtime
-                    </p>
-                  </div>
-                  <div className="text-sm font-mono text-muted-foreground">
-                    v{versions.node}
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between py-2">
-                  <div>
-                    <p className="font-medium">Chrome</p>
-                    <p className="text-sm text-muted-foreground">
-                      Browser engine
-                    </p>
-                  </div>
-                  <div className="text-sm font-mono text-muted-foreground">
-                    v{versions.chrome}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="space-y-6">
+            {/* Application Header */}
+            <Alert>
+              <Monitor className="h-4 w-4" />
+              <AlertTitle>
+                {import.meta.env.VITE_APP_NAME}
+              </AlertTitle>
+              <AlertDescription>
+                A modern desktop application built with Electron and React. 
+                Version 1.0.0 • Built with ❤️ using modern web technologies
+              </AlertDescription>
+            </Alert>
+
+            {/* System Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Cpu className="h-5 w-5" />
+                  System Information
+                </CardTitle>
+                <CardDescription>
+                  Runtime and framework versions
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Component</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Version</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium">Electron</TableCell>
+                      <TableCell className="text-muted-foreground">Cross-platform framework</TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="secondary" className="font-mono">
+                          v{versions.electron}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Node.js</TableCell>
+                      <TableCell className="text-muted-foreground">JavaScript runtime</TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="secondary" className="font-mono">
+                          v{versions.node}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Chrome</TableCell>
+                      <TableCell className="text-muted-foreground">Rendering engine</TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="secondary" className="font-mono">
+                          v{versions.chrome}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* AI Libraries */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5" />
+                  AI Libraries
+                </CardTitle>
+                <CardDescription>
+                  Integrated AI SDK versions and availability
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Library</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Version</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium">OpenAI</TableCell>
+                      <TableCell className="text-muted-foreground">ChatGPT & GPT models SDK</TableCell>
+                      <TableCell className="text-right">
+                        <Badge 
+                          variant={versions.openai !== 'N/A' ? 'default' : 'destructive'} 
+                          className="font-mono"
+                        >
+                          v{versions.openai}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Anthropic</TableCell>
+                      <TableCell className="text-muted-foreground">Claude AI models SDK</TableCell>
+                      <TableCell className="text-right">
+                        <Badge 
+                          variant={versions.anthropic !== 'N/A' ? 'default' : 'destructive'} 
+                          className="font-mono"
+                        >
+                          v{versions.anthropic}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium">Google GenAI</TableCell>
+                      <TableCell className="text-muted-foreground">Gemini models SDK</TableCell>
+                      <TableCell className="text-right">
+                        <Badge 
+                          variant={versions.genai !== 'N/A' ? 'default' : 'destructive'} 
+                          className="font-mono"
+                        >
+                          v{versions.genai}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
         )
       
