@@ -4,6 +4,7 @@ import { ThemeProvider } from './components/theme-provider'
 import { TitleBar } from './components/title-bar'
 import { Settings } from './components/settings'
 
+
 function App(): React.JSX.Element {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
