@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# IPC Handler Implementation Guide
+
+This project uses a structured approach for IPC handlers with proper lifecycle management and cleanup.
+
+## Architecture
+
+- **`src/main/ipc/index.ts`**: [index.ts](mdc:src/main/ipc/index.ts) - Central registration/cleanup orchestration
+- **`src/main/ipc/theme.ts`**: [theme.ts](mdc:src/main/ipc/theme.ts) - Example handler implementation
+- **`src/shared/ipc-events.ts`**: [ipc-events.ts](mdc:src/shared/ipc-events.ts) - Centralized event name definitions
+- **`src/preload/index.ts`**: [preload.ts](mdc:src/preload/index.ts) - Renderer API exposure
+
+## Adding New IPC Handlers
+
+### 1. Define Events
+Add event names to `IpcEvents` enum in [ipc-events.ts](mdc:src/shared/ipc-events.ts):
+```typescript
+export enum IpcEvents {
+  SetTheme = 'theme:set',
+  NewFeature = 'feature:action', // Add here
+}
+```
+
+### 2. Create Handler File
+Follow the pattern in [theme.ts](mdc:src/main/ipc/theme.ts):
+- Return cleanup function from register function
+- Store cleanup reference to prevent duplicate handlers
+- Use named handler functions for proper cleanup
+- Validate sender using [utils.ts](mdc:src/main/ipc/utils.ts)
+
+### 3. Register Handler
+Add to [index.ts](mdc:src/main/ipc/index.ts) `registerIpcHandlers()`:
+```typescript
+handlerCleanups.push(
+  registerNewFeatureHandler() // Add here
+)
+```
+
+### 4. Expose in Preload
+Add API methods to [preload/index.ts](mdc:src/preload/index.ts) `customApi` object and update type definitions in [index.d.ts](mdc:src/preload/index.d.ts).
+
+## Key Patterns
+
+- **Cleanup Functions**: All handlers must return cleanup functions
+- **Security Validation**: Use `validateSender()` for all handlers  
+- **Error Handling**: Wrap cleanup in try-catch blocks
+- **Type Safety**: Define types in [types.ts](mdc:src/shared/types.ts)
+- **Event Naming**: Use `category:action` format for IPC event names
