@@ -1,4 +1,4 @@
-export type Theme = 'light' | 'dark' | 'system'
+export type Theme = 'system'
 
 export interface ThemeInfo {
   themeSource: Theme

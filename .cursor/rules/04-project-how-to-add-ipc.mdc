@@ -20,7 +20,7 @@ This project uses a structured approach for IPC handlers with proper lifecycle m
 Add event names to `IpcEvents` enum in [ipc-events.ts](mdc:src/shared/ipc-events.ts):
 ```typescript
 export enum IpcEvents {
-  SetTheme = 'theme:set',
+  GetTheme = 'theme:get',
   NewFeature = 'feature:action', // Add here
 }
 ```
