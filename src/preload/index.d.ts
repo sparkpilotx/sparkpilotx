@@ -5,6 +5,13 @@ declare global {
     api: ElectronAPI & {
       // Settings API
       onOpenSettings: (callback: () => void) => () => void
+      
+      // Version API
+      getVersions: () => {
+        electron: string
+        node: string
+        chrome: string
+      }
     }
   }
 }

@@ -1,5 +1,5 @@
-import React from 'react'
-import { X, Settings as SettingsIconLucide } from 'lucide-react'
+import React, { useState } from 'react'
+import { X, Info, Settings as SettingsIcon } from 'lucide-react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Separator } from './ui/separator'
@@ -9,20 +9,112 @@ interface SettingsProps {
   onClose: () => void
 }
 
+type SettingsTab = {
+  id: string
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  description?: string
+}
+
+const settingsTabs: SettingsTab[] = [
+  {
+    id: 'about',
+    label: 'About',
+    icon: Info,
+    description: 'Application information'
+  }
+  // Future tabs can be added here
+  // {
+  //   id: 'general',
+  //   label: 'General',
+  //   icon: SettingsIcon,
+  //   description: 'General preferences'
+  // },
+  // {
+  //   id: 'ai',
+  //   label: 'AI Configuration',
+  //   icon: Bot,
+  //   description: 'AI models and API settings'
+  // }
+]
+
 export function Settings({ isOpen, onClose }: SettingsProps): React.JSX.Element | null {
+  const [activeTab, setActiveTab] = useState('about')
+  
   if (!isOpen) return null
+  
+  const versions = window.api.getVersions()
+  const currentTab = settingsTabs.find(tab => tab.id === activeTab)
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'about':
+        return (
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Version Information</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="font-medium">Electron</p>
+                    <p className="text-sm text-muted-foreground">
+                      Framework version
+                    </p>
+                  </div>
+                  <div className="text-sm font-mono text-muted-foreground">
+                    v{versions.electron}
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="font-medium">Node.js</p>
+                    <p className="text-sm text-muted-foreground">
+                      JavaScript runtime
+                    </p>
+                  </div>
+                  <div className="text-sm font-mono text-muted-foreground">
+                    v{versions.node}
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="font-medium">Chrome</p>
+                    <p className="text-sm text-muted-foreground">
+                      Browser engine
+                    </p>
+                  </div>
+                  <div className="text-sm font-mono text-muted-foreground">
+                    v{versions.chrome}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      
+      default:
+        return (
+          <div className="flex items-center justify-center h-32 text-muted-foreground">
+            <p>Content for {currentTab?.label} will be implemented here.</p>
+          </div>
+        )
+    }
+  }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-      <Card className="w-full max-w-2xl max-h-[80vh] overflow-auto">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+      <Card className="w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden">
+        {/* Header */}
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <SettingsIconLucide className="h-5 w-5" />
+              <SettingsIcon className="h-5 w-5" />
               Settings
             </CardTitle>
             <CardDescription>
-              Configure your application preferences
+              Configure {import.meta.env.VITE_APP_NAME} preferences
             </CardDescription>
           </div>
           <Button
@@ -35,96 +127,64 @@ export function Settings({ isOpen, onClose }: SettingsProps): React.JSX.Element 
             <span className="sr-only">Close</span>
           </Button>
         </CardHeader>
-        <Separator />
-        <CardContent className="space-y-6 pt-6">
-          {/* General Settings */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">General</h3>
-            <div className="space-y-4 pl-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Theme</p>
-                  <p className="text-sm text-muted-foreground">
-                    Choose your preferred theme
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">Auto</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Language</p>
-                  <p className="text-sm text-muted-foreground">
-                    Select your language preference
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">English</div>
-              </div>
-            </div>
+
+        {/* Main Content */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar */}
+          <div className="w-64 border-r bg-muted/20 p-4">
+            <nav className="space-y-1">
+              {settingsTabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <Button
+                    key={tab.id}
+                    variant={activeTab === tab.id ? "default" : "ghost"}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full h-auto justify-start p-3 text-left ${
+                      activeTab === tab.id 
+                        ? '' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 flex-shrink-0 mr-3" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">{tab.label}</div>
+                      {tab.description && (
+                        <div className="text-xs opacity-70 truncate">
+                          {tab.description}
+                        </div>
+                      )}
+                    </div>
+                  </Button>
+                )
+              })}
+            </nav>
           </div>
 
-          <Separator />
-
-          {/* AI Settings */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">AI Configuration</h3>
-            <div className="space-y-4 pl-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Default Model</p>
-                  <p className="text-sm text-muted-foreground">
-                    Choose your preferred AI model
+          {/* Content Area */}
+          <div className="flex-1 overflow-auto">
+            <CardContent className="p-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2">
+                  {currentTab && (
+                    <>
+                      <currentTab.icon className="h-5 w-5" />
+                      {currentTab.label}
+                    </>
+                  )}
+                </h2>
+                {currentTab?.description && (
+                  <p className="text-muted-foreground mt-1">
+                    {currentTab.description}
                   </p>
-                </div>
-                <div className="text-sm text-muted-foreground">GPT-4</div>
+                )}
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">API Keys</p>
-                  <p className="text-sm text-muted-foreground">
-                    Manage your API keys for different services
-                  </p>
-                </div>
-                <Button variant="outline" size="sm">
-                  Configure
-                </Button>
-              </div>
-            </div>
+              <Separator className="mb-6" />
+              {renderTabContent()}
+            </CardContent>
           </div>
-
-          <Separator />
-
-          {/* About */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">About</h3>
-            <div className="space-y-4 pl-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Version</p>
-                  <p className="text-sm text-muted-foreground">
-                    Current application version
-                  </p>
-                </div>
-                <div className="text-sm text-muted-foreground">1.0.0</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Check for Updates</p>
-                  <p className="text-sm text-muted-foreground">
-                    Keep your app up to date
-                  </p>
-                </div>
-                <Button variant="outline" size="sm">
-                  Check Now
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   )
-}
-
-export function SettingsIcon(): React.JSX.Element {
-  return <SettingsIconLucide className="h-4 w-4" />
 } 

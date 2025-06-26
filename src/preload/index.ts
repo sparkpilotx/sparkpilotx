@@ -7,7 +7,14 @@ const customApi = {
   onOpenSettings: (callback: () => void) => {
     ipcRenderer.on(IpcEvents.OPEN_SETTINGS, callback)
     return () => ipcRenderer.removeListener(IpcEvents.OPEN_SETTINGS, callback)
-  }
+  },
+  
+  // Version API
+  getVersions: () => ({
+    electron: process.versions.electron,
+    node: process.versions.node,
+    chrome: process.versions.chrome
+  })
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
