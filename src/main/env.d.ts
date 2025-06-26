@@ -10,6 +10,9 @@ interface ImportMetaEnv {
   readonly MAIN_VITE_OPENAI_API_KEY: string
   readonly MAIN_VITE_ANTHROPIC_API_KEY: string
   readonly MAIN_VITE_GEMINI_API_KEY: string
+  readonly MAIN_VITE_GOOGLE_CLOUD_PROJECT: string
+  readonly MAIN_VITE_GOOGLE_CLOUD_LOCATION: string
+  readonly MAIN_VITE_GOOGLE_GENAI_USE_VERTEXAI: string
   readonly MAIN_VITE_UPSTREAM_PROXY: string
   // more env variables...
 }

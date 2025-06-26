@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerIpcHandlers } from './ipc'
+import { initializeGlobalProxy } from './config/proxy'
 
 const RENDERER_URL = process.env['ELECTRON_RENDERER_URL']
 
@@ -58,6 +59,9 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   app.whenReady().then(() => {
+    // Initialize global proxy configuration early
+    initializeGlobalProxy()
+
     // Set app user model id for windows
     electronApp.setAppUserModelId('io.ai-copilots.sparkpilotx')
 

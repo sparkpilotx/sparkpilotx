@@ -1,14 +1,15 @@
-import { ThemeProvider } from '@/components/theme-provider'
+import React from 'react'
+
+import { ThemeProvider } from './components/theme-provider'
 import { TitleBar } from './components/title-bar'
 
 function App(): React.JSX.Element {
-  const platform = window.api.process.platform
-
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="sparkpilotx-ui-theme">
-      <TitleBar />
-      <div className="pt-8">
-        <p>Platform: {platform}</p>
+    <ThemeProvider>
+      <div className="flex flex-col h-screen">
+        <TitleBar />
+        <main className="flex-1 p-4 overflow-hidden">
+        </main>
       </div>
     </ThemeProvider>
   )

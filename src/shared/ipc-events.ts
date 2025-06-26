@@ -1,3 +1,3 @@
 export enum IpcEvents {
-  SetTheme = 'theme:set'
-} 
+  SetTheme = 'theme:set',
+}
