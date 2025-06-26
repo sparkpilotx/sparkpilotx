@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useTheme } from '@/components/theme-provider'
 
 export function ModeToggle(): React.JSX.Element {
-  const { theme, setTheme } = useTheme()
+  const { theme, effectiveTheme, setTheme } = useTheme()
 
   const handleToggle = (): void => {
     if (theme === 'light') {
@@ -33,7 +33,9 @@ export function ModeToggle(): React.JSX.Element {
           theme === 'system' ? 'rotate-0 scale-100' : 'rotate-90 scale-0'
         }`}
       />
-      <span className="sr-only">Toggle theme</span>
+      <span className="sr-only">
+        Toggle theme (current: {theme === 'system' ? `system (${effectiveTheme})` : theme})
+      </span>
     </Button>
   )
 } 
