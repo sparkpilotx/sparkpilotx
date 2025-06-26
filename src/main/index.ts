@@ -4,10 +4,13 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerIpcHandlers, unregisterIpcHandlers } from './ipc'
 import { initializeGlobalProxy } from './config/proxy'
+import { createAppMenu } from './menu'
 
 const RENDERER_URL = process.env['ELECTRON_RENDERER_URL']
 
 let mainWindow: BrowserWindow
+
+
 
 function createWindow(): void {
   // Create the browser window.
@@ -80,6 +83,7 @@ if (!app.requestSingleInstanceLock()) {
     registerIpcHandlers()
 
     createWindow()
+    createAppMenu(mainWindow)
 
     app.on('activate', function () {
       // On macOS it's common to re-create a window in the app when the

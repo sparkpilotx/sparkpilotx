@@ -1,9 +1,13 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { IpcEvents } from '../shared/ipc-events'
 
 const customApi = {
-  // Theme-related APIs removed as we now use CSS media queries
-  // Add other custom APIs here as needed
+  // Settings API
+  onOpenSettings: (callback: () => void) => {
+    ipcRenderer.on(IpcEvents.OPEN_SETTINGS, callback)
+    return () => ipcRenderer.removeListener(IpcEvents.OPEN_SETTINGS, callback)
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
