@@ -1,0 +1,52 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+FlowState 和 zustand 之间是什么关系？
+
+让我查看 `FlowState` 的定义和它与 Zustand 的关系：
+Read file: src/renderer/src/flow/types/index.ts
+Read file: src/renderer/src/flow/stores/flow-store.ts
+现在我明白了 `FlowState` 和 Zustand 之间的关系：
+
+## FlowState 和 Zustand 的关系
+
+### 1. **FlowState 是 TypeScript 类型定义**
+`FlowState` 是一个 TypeScript 接口，定义了流程图应用的状态结构：
+```typescript
+export type FlowState = {
+  nodes: FlowNode[];           // 节点数组
+  edges: FlowEdge[];           // 边数组
+  onNodesChange: OnNodesChange<FlowNode>;  // 节点变化处理函数
+  onEdgesChange: OnEdgesChange;            // 边变化处理函数
+  onConnect: OnConnect;                    // 连接处理函数
+  setNodes: (nodes: FlowNode[]) => void;   // 设置节点函数
+  setEdges: (edges: FlowEdge[]) => void;   // 设置边函数
+};
+```
+
+### 2. **Zustand 使用 FlowState 作为状态类型**
+在 `flow-store.ts` 中，Zustand 的 `create` 函数使用 `FlowState` 作为泛型参数：
+```typescript
+const useFlowStore = create<FlowState>((set, get) => ({
+  // 实现 FlowState 接口中定义的所有属性和方法
+}));
+```
+
+### 3. **关系总结**
+
+- **FlowState**: **接口/类型定义** - 描述状态的结构
+- **Zustand**: **状态管理库** - 提供状态管理功能  
+- **useFlowStore**: **具体实现** - 使用 Zustand 创建符合 FlowState 类型的状态管理器
+
+### 4. **工作流程**
+1. `FlowState` 定义了什么数据和操作是可用的
+2. Zustand 提供了状态管理的底层机制
+3. `useFlowStore` 将两者结合，创建了一个类型安全的状态管理钩子
+4. React 组件通过 `useFlowStore` 访问和操作状态
+
+这种设计提供了：
+- **类型安全**：TypeScript 确保正确使用状态
+- **性能优化**：Zustand 提供高效的状态更新
+- **可维护性**：清晰的接口定义使代码易于理解和维护

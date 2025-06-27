@@ -1,0 +1,98 @@
+/* 工作流编辑器主题样式 */
+
+.workflow-editor {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* React Flow Controls 样式覆盖 */
+.react-flow__controls {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls-button {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.react-flow__controls-button:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+
+/* React Flow MiniMap 样式覆盖 */
+.react-flow__minimap {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* React Flow Background 样式覆盖 */
+.react-flow__background {
+  background-color: #f9fafb;
+}
+
+/* 节点连接线样式 */
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:focus .react-flow__edge-path,
+.react-flow__edge:focus-visible .react-flow__edge-path {
+  stroke: #3b82f6;
+  stroke-width: 3;
+}
+
+/* 节点选中状态 */
+.react-flow__node.selected {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+/* Handle 样式 */
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__handle.react-flow__handle-left {
+  left: -5px;
+}
+
+.react-flow__handle.react-flow__handle-right {
+  right: -5px;
+}
+
+/* 连接线动画 */
+@keyframes workflow-edge-flow {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.react-flow__edge.animated .react-flow__edge-path {
+  animation: workflow-edge-flow 0.5s linear infinite;
+}
+
+/* 节点拖拽状态 */
+.react-flow__node.dragging {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+/* Attribution 样式覆盖 */
+.react-flow__attribution {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: #6b7280;
+} 

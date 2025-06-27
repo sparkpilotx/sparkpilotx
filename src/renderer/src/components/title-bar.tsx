@@ -10,7 +10,7 @@ export function TitleBar({ onOpenSettings }: TitleBarProps): React.JSX.Element {
 
   return (
     <>
-      <div className="titlebar fixed top-0 left-0 right-0 h-8 select-none bg-muted/40 flex items-center justify-between px-3">
+      <header className="titlebar h-8 select-none bg-muted/40 flex items-center justify-between px-3">
         {/* Left side icons - for future functionality */}
         <div className="flex items-center gap-1">
           {/* Placeholder for future left-side icons */}
@@ -48,7 +48,7 @@ export function TitleBar({ onOpenSettings }: TitleBarProps): React.JSX.Element {
           </Button>
           */}
         </div>
-      </div>
+      </header>
     </>
   )
 } 

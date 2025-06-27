@@ -1,0 +1,211 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# React Flow TypeScript Patterns
+
+## Flow Component Structure
+- Flow components live in `src/renderer/src/flow/`
+- Main editor: [flow-editor.tsx](mdc:src/renderer/src/flow/flow-editor.tsx)
+- Export from [index.ts](mdc:src/renderer/src/flow/index.ts)
+- Examples in [components/](mdc:src/renderer/src/flow/components) subdirectory
+
+## TypeScript Import Pattern
+```typescript
+import React, { useState, useCallback, useEffect } from 'react';
+import {
+  ReactFlow,
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+  type Node,
+  type Edge,
+  type OnConnect,
+  type OnNodesChange,
+  type OnEdgesChange,
+  type ColorMode,
+  BackgroundVariant,
+} from '@xyflow/react';
+```
+
+## Required Imports
+- Always import React explicitly (project uses explicit React imports)
+- Use `BackgroundVariant.Dots` instead of string literals
+- Import CSS: `import '@xyflow/react/dist/style.css'`
+- Import theme: `import './styles/flow-theme.css'`
+
+## Event Handler Typing
+- Use specific callback types: `OnNodesChange`, `OnEdgesChange`, `OnConnect`, `OnNodeDrag`
+- Apply changes with: `applyNodeChanges(changes, nodes)` and `applyEdgeChanges(changes, edges)`
+- Connect edges with: `addEdge(connection, edges)`
+
+## Default Components
+Include these standard components: `<Controls />`, `<MiniMap />`, `<Background />`, `<Panel />`
+
+## Custom Node Performance
+- Define `nodeTypes` outside component to prevent re-renders
+- If inside component, use `useMemo(() => ({ customNode: CustomNode }), [])`
+- Never define `nodeTypes` directly inside component without memoization
+
+## Styling & Theme Integration
+
+### Dark Mode Support
+- Always use `colorMode` prop on ReactFlow component
+- Detect shadcn/ui theme changes with MutationObserver:
+```typescript
+const [colorMode, setColorMode] = useState<ColorMode>('system');
+
+useEffect(() => {
+  const updateColorMode = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setColorMode(isDark ? 'dark' : 'light');
+  };
+  
+  updateColorMode();
+  const observer = new MutationObserver(updateColorMode);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+  
+  return () => observer.disconnect();
+}, []);
+```
+
+### Styling Strategy
+
+#### CSS Variables (Background, Controls, Built-in Panels Only)
+- Theme file: [flow-theme.css](mdc:src/renderer/src/flow/styles/flow-theme.css)
+- Maps React Flow `--xy-*` variables to shadcn/ui design tokens
+- Only for built-in React Flow components:
+  ```css
+  /* Background */
+  --xy-background-color-default: var(--background);
+  --xy-background-pattern-color-default: var(--muted-foreground);
+  
+  /* Controls */
+  --xy-controls-background-color-default: var(--card);
+  --xy-controls-button-color-default: var(--card-foreground);
+  
+  /* Built-in Panel */
+  --xy-panel-background-color-default: var(--card);
+  ```
+
+#### Complete Custom Styling (Nodes, Edges, Custom Components)
+- **Nodes**: 100% Tailwind classes, no CSS variables
+- **Edges**: Pure Tailwind + inline styles for SVG elements
+- **Custom Panels**: Full Tailwind styling, self-contained
+- Build completely independent styled components
+- Example node: `className="bg-card text-card-foreground border border-border rounded-lg shadow-sm p-4"`
+- Example edge: Use Tailwind for containers, inline styles for SVG paths
+
+#### Component Guidelines
+- **Custom Nodes**: Wrap in `React.memo`, use proper TypeScript types
+- **Custom Edges**: Combine Tailwind with inline SVG styling
+- **Never override** React Flow's positioning CSS (transforms, absolute positioning)
+- Make components fully self-contained with their own styling
+
+## Node Toolbar System
+
+### Registration-Based Architecture
+- Each node type registers its own toolbar configuration
+- Toolbars are self-descriptive and modular
+- Components: [node-toolbar-registry.tsx](mdc:src/renderer/src/flow/components/node-toolbar-registry.tsx), [node-toolbar.tsx](mdc:src/renderer/src/flow/components/node-toolbar.tsx)
+
+### Node Toolbar Registration Pattern
+```typescript
+import { useEffect } from 'react';
+import { nodeToolbarRegistry, createToolbarActions } from '../components/node-toolbar-registry';
+
+const CustomNode = ({ data }) => {
+  // Register toolbar in useEffect
+  useEffect(() => {
+    const toolbarActions = createToolbarActions({
+      onSettings: (nodeId, nodeData) => {
+        // Handle settings action
+      },
+      onCopy: (nodeId, nodeData) => {
+        // Handle copy action
+      },
+      onDelete: (nodeId, nodeData) => {
+        // Handle delete action
+      },
+    });
+
+    nodeToolbarRegistry.register({
+      nodeType: 'customNodeType',
+      actions: toolbarActions,
+      position: 'top', // 'top' | 'bottom' | 'left' | 'right'
+      align: 'center', // 'start' | 'center' | 'end'
+    });
+
+    // Cleanup on unmount
+    return () => {
+      nodeToolbarRegistry.unregister('customNodeType');
+    };
+  }, []);
+
+  return (
+    // Node JSX
+  );
+};
+```
+
+### Available Toolbar Actions
+Common actions from `createToolbarActions()`:
+- `onSettings`: Configuration dialog
+- `onCopy`: Duplicate node
+- `onDelete`: Remove node
+- `onRun`: Start processing
+- `onPause`: Pause processing
+- `onReset`: Reset state
+- `onDownload`: Export data
+- `onUpload`: Import data
+- `onLock/onUnlock`: Toggle node lock
+- `onToggleVisibility`: Show/hide node
+
+### Toolbar Rendering
+- Toolbars automatically render for selected nodes
+- Use `NodeToolbarRenderer` component in FlowEditor
+- Support conditional visibility and disabled states:
+```typescript
+{
+  id: 'custom-action',
+  label: 'Custom Action',
+  icon: CustomIcon,
+  onClick: (nodeId, nodeData) => {},
+  visible: (data) => data.showCustomAction, // Optional
+  disabled: (data) => data.isProcessing,    // Optional
+  variant: 'outline', // Button variant
+}
+```
+
+### FlowEditor Integration
+- Track selected nodes with `useState<string[]>`
+- Update selection in `onNodesChange` callback
+- Render toolbars for selected nodes:
+```typescript
+{selectedNodes.map(nodeId => {
+  const node = nodes.find(n => n.id === nodeId);
+  if (!node) return null;
+  
+  return (
+    <NodeToolbarRenderer
+      key={`toolbar-${nodeId}`}
+      nodeId={nodeId}
+      nodeType={node.type}
+      nodeData={node.data}
+      isVisible={true}
+    />
+  );
+})}
+```
+
+### Best Practices
+- Register toolbars in `useEffect` with cleanup
+- Use `createToolbarActions` helper for common actions
+- Define node-specific actions based on node functionality
+- Position toolbars appropriately (input nodes: top, output nodes: bottom)
+- Make toolbar actions async-safe and error-handled
+
