@@ -4,6 +4,8 @@
 export type {
   AIModelEntity,
   DataProcessorEntity,
+  AnnotationEntity,
+  NodeEntity,
   WorkflowEntity,
   WorkflowStepEntity,
   WorkflowConnectionEntity,
@@ -33,6 +35,7 @@ export { useWorkflowSync } from './hooks/use-workflow-sync';
 export {
   sampleAIModels,
   sampleDataProcessors,
+  sampleAnnotations,
   sampleWorkflow,
   sampleWorkflowSteps,
   sampleWorkflowConnections,
@@ -41,6 +44,7 @@ export {
 import {
   sampleAIModels,
   sampleDataProcessors,
+  sampleAnnotations,
   sampleWorkflow,
   sampleWorkflowSteps,
   sampleWorkflowConnections,
@@ -54,6 +58,7 @@ export function initializeWorkflowDemo() {
   // 清除现有数据
   businessStore.aiModels.clear();
   businessStore.dataProcessors.clear();
+  businessStore.annotations.clear();
   businessStore.workflows.clear();
   businessStore.workflowSteps.clear();
   businessStore.workflowConnections.clear();
@@ -66,6 +71,11 @@ export function initializeWorkflowDemo() {
   // 设置数据处理器
   sampleDataProcessors.forEach((processor) => {
     businessStore.dataProcessors.set(processor.id, processor);
+  });
+
+  // 设置注释
+  sampleAnnotations.forEach((annotation) => {
+    businessStore.annotations.set(annotation.id, annotation);
   });
   
   // 设置工作流
@@ -88,6 +98,7 @@ export function initializeWorkflowDemo() {
   console.log('📊 Business entities loaded:', {
     aiModels: businessStore.aiModels.size,
     dataProcessors: businessStore.dataProcessors.size,
+    annotations: businessStore.annotations.size,
     workflows: businessStore.workflows.size,
     workflowSteps: businessStore.workflowSteps.size,
     workflowConnections: businessStore.workflowConnections.size,

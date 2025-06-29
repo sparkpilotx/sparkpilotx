@@ -13,6 +13,7 @@ export function WorkflowToolbar() {
   const { 
     createAIModel,
     createDataProcessor,
+    createAnnotation,
     addWorkflowStep, 
     currentWorkflowId,
     createWorkflow,
@@ -96,6 +97,63 @@ export function WorkflowToolbar() {
       workflowId: currentWorkflowId!,
       entityType: 'dataProcessor',
       entityId: processorId,
+      position: { 
+        x: Math.random() * 400 + 100, 
+        y: Math.random() * 300 + 100 
+      },
+      configuration: {},
+    });
+  };
+
+  const handleAddAnnotation = (type: 'note' | 'warning' | 'info' | 'title') => {
+    if (!currentWorkflowId) {
+      const workflowId = createWorkflow({
+        name: 'New Workflow',
+        status: 'draft',
+        steps: [],
+        connections: [],
+      });
+      setCurrentWorkflow(workflowId);
+    }
+    
+    // Create annotation entity with defaults based on type
+    const annotationDefaults = {
+      note: {
+        name: 'Note',
+        content: 'Add your note here...',
+        style: { backgroundColor: '#f3f4f6', textColor: '#374151', fontSize: 'medium' as const, width: 200, height: 80 }
+      },
+      warning: {
+        name: 'Warning',
+        content: 'Important warning message...',
+        style: { backgroundColor: '#fef3c7', textColor: '#92400e', fontSize: 'medium' as const, width: 220, height: 80 }
+      },
+      info: {
+        name: 'Information',
+        content: 'Helpful information...',
+        style: { backgroundColor: '#dbeafe', textColor: '#1e40af', fontSize: 'medium' as const, width: 200, height: 80 }
+      },
+      title: {
+        name: 'Title',
+        content: 'Section Title\n\nDescription of this workflow section...',
+        style: { backgroundColor: '#f0f9ff', textColor: '#0c4a6e', fontSize: 'large' as const, width: 280, height: 100 }
+      }
+    };
+    
+    const defaults = annotationDefaults[type];
+    
+    const annotationId = createAnnotation({
+      name: defaults.name,
+      content: defaults.content,
+      annotationType: type,
+      style: defaults.style,
+    });
+    
+    // Add as workflow step
+    addWorkflowStep({
+      workflowId: currentWorkflowId!,
+      entityType: 'annotation',
+      entityId: annotationId,
       position: { 
         x: Math.random() * 400 + 100, 
         y: Math.random() * 300 + 100 
@@ -195,6 +253,35 @@ export function WorkflowToolbar() {
           title="Add Data Processor"
         >
           + Processor
+        </button>
+        <div className="border-l mx-1"></div>
+        <button
+          onClick={() => handleAddAnnotation('title')}
+          className="px-3 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors text-sm font-medium"
+          title="Add Title Annotation"
+        >
+          📋 Title
+        </button>
+        <button
+          onClick={() => handleAddAnnotation('note')}
+          className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-sm font-medium"
+          title="Add Note Annotation"
+        >
+          📝 Note
+        </button>
+        <button
+          onClick={() => handleAddAnnotation('warning')}
+          className="px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors text-sm font-medium"
+          title="Add Warning Annotation"
+        >
+          ⚠️ Warning
+        </button>
+        <button
+          onClick={() => handleAddAnnotation('info')}
+          className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm font-medium"
+          title="Add Info Annotation"
+        >
+          ℹ️ Info
         </button>
         <div className="border-l mx-1"></div>
         <button

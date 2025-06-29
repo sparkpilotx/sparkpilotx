@@ -6,6 +6,7 @@ import { useRenderStore } from '../stores/render-store';
 import {
   aiModelToRenderNode,
   dataProcessorToRenderNode,
+  annotationToRenderNode,
   connectionToRenderEdge,
 } from '../adapters/business-to-render';
 import type { RenderNode, RenderEdge } from '../adapters/business-to-render';
@@ -14,6 +15,7 @@ export function useWorkflowSync() {
   const {
     aiModels,
     dataProcessors,
+    annotations,
     workflowSteps,
     workflowConnections,
     currentWorkflowId,
@@ -52,11 +54,17 @@ export function useWorkflowSync() {
           throw new Error(`Data Processor not found: ${step.entityId}`);
         }
         return dataProcessorToRenderNode(processor, step);
+      } else if (step.entityType === 'annotation') {
+        const annotation = annotations.get(step.entityId);
+        if (!annotation) {
+          throw new Error(`Annotation not found: ${step.entityId}`);
+        }
+        return annotationToRenderNode(annotation, step);
       }
       
       throw new Error(`Unknown entity type: ${step.entityType}`);
     });
-  }, [currentSteps, aiModels, dataProcessors]);
+  }, [currentSteps, aiModels, dataProcessors, annotations]);
   
   // Memoize render edges conversion
   const renderEdges = useMemo((): RenderEdge[] => {

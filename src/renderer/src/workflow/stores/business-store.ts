@@ -5,6 +5,8 @@ import { devtools } from 'zustand/middleware';
 import type {
   AIModelEntity,
   DataProcessorEntity,
+  AnnotationEntity,
+  NodeEntity,
   WorkflowEntity,
   WorkflowStepEntity,
   WorkflowConnectionEntity,
@@ -14,6 +16,7 @@ interface BusinessState {
   // Business Data Collections
   aiModels: Map<string, AIModelEntity>;
   dataProcessors: Map<string, DataProcessorEntity>;
+  annotations: Map<string, AnnotationEntity>;
   workflows: Map<string, WorkflowEntity>;
   workflowSteps: Map<string, WorkflowStepEntity>;
   workflowConnections: Map<string, WorkflowConnectionEntity>;
@@ -22,24 +25,32 @@ interface BusinessState {
   currentWorkflowId: string | null;
   
   // Business Actions
-  createAIModel: (model: Omit<AIModelEntity, 'id' | 'createdAt' | 'updatedAt'>) => string;
+  createAIModel: (model: Omit<AIModelEntity, 'id' | 'createdAt' | 'updatedAt' | 'executable'>) => string;
   updateAIModel: (id: string, updates: Partial<AIModelEntity>) => void;
   deleteAIModel: (id: string) => void;
   
-  createDataProcessor: (processor: Omit<DataProcessorEntity, 'id' | 'createdAt' | 'updatedAt'>) => string;
+  createDataProcessor: (processor: Omit<DataProcessorEntity, 'id' | 'createdAt' | 'updatedAt' | 'executable'>) => string;
   updateDataProcessor: (id: string, updates: Partial<DataProcessorEntity>) => void;
   deleteDataProcessor: (id: string) => void;
+
+  createAnnotation: (annotation: Omit<AnnotationEntity, 'id' | 'createdAt' | 'updatedAt' | 'executable'>) => string;
+  updateAnnotation: (id: string, updates: Partial<AnnotationEntity>) => void;
+  deleteAnnotation: (id: string) => void;
   
   createWorkflow: (workflow: Omit<WorkflowEntity, 'id' | 'createdAt' | 'updatedAt'>) => string;
   setCurrentWorkflow: (workflowId: string | null) => void;
   clearCurrentWorkflow: () => void;
   
-  addWorkflowStep: (step: Omit<WorkflowStepEntity, 'id' | 'createdAt'>) => string;
+  addWorkflowStep: (step: Omit<WorkflowStepEntity, 'id' | 'createdAt' | 'executable'>) => string;
   updateWorkflowStep: (stepId: string, updates: Partial<WorkflowStepEntity>) => void;
   deleteWorkflowStep: (stepId: string) => void;
   
   addWorkflowConnection: (connection: Omit<WorkflowConnectionEntity, 'id' | 'createdAt'>) => string;
   deleteWorkflowConnection: (connectionId: string) => void;
+
+  // Helper methods for node entity operations
+  getNodeEntity: (entityType: string, entityId: string) => NodeEntity | undefined;
+  validateConnection: (sourceStepId: string, targetStepId: string) => { valid: boolean; reason?: string };
 }
 
 export const useBusinessStore = create<BusinessState>()(
@@ -48,6 +59,7 @@ export const useBusinessStore = create<BusinessState>()(
       // Initial State
       aiModels: new Map(),
       dataProcessors: new Map(),
+      annotations: new Map(),
       workflows: new Map(),
       workflowSteps: new Map(),
       workflowConnections: new Map(),
@@ -59,6 +71,7 @@ export const useBusinessStore = create<BusinessState>()(
         const model: AIModelEntity = {
           ...modelData,
           id,
+          executable: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -100,6 +113,7 @@ export const useBusinessStore = create<BusinessState>()(
         const processor: DataProcessorEntity = {
           ...processorData,
           id,
+          executable: true,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -132,6 +146,48 @@ export const useBusinessStore = create<BusinessState>()(
           const newProcessors = new Map(state.dataProcessors);
           newProcessors.delete(id);
           return { dataProcessors: newProcessors };
+        });
+      },
+
+      // Annotation Actions
+      createAnnotation: (annotationData) => {
+        const id = `annotation_${Date.now()}`;
+        const annotation: AnnotationEntity = {
+          ...annotationData,
+          id,
+          executable: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        
+        set((state) => ({
+          annotations: new Map(state.annotations).set(id, annotation),
+        }));
+        
+        return id;
+      },
+      
+      updateAnnotation: (id, updates) => {
+        const { annotations } = get();
+        const annotation = annotations.get(id);
+        if (!annotation) return;
+        
+        const updatedAnnotation = {
+          ...annotation,
+          ...updates,
+          updatedAt: new Date(),
+        };
+        
+        set((state) => ({
+          annotations: new Map(state.annotations).set(id, updatedAnnotation),
+        }));
+      },
+      
+      deleteAnnotation: (id) => {
+        set((state) => {
+          const newAnnotations = new Map(state.annotations);
+          newAnnotations.delete(id);
+          return { annotations: newAnnotations };
         });
       },
       
@@ -191,9 +247,14 @@ export const useBusinessStore = create<BusinessState>()(
       // Workflow Step Actions
       addWorkflowStep: (stepData) => {
         const id = `step_${Date.now()}`;
+        
+        // Determine executable status from entity
+        const entityExecutable = get().getNodeEntity(stepData.entityType, stepData.entityId)?.executable ?? false;
+        
         const step: WorkflowStepEntity = {
           ...stepData,
           id,
+          executable: entityExecutable,
           createdAt: new Date(),
         };
         
@@ -226,10 +287,17 @@ export const useBusinessStore = create<BusinessState>()(
       
       // Connection Actions
       addWorkflowConnection: (connectionData) => {
+        const validation = get().validateConnection(connectionData.sourceStepId, connectionData.targetStepId);
+        if (!validation.valid) {
+          console.warn(`Invalid connection: ${validation.reason}`);
+          return '';
+        }
+
         const id = `connection_${Date.now()}`;
         const connection: WorkflowConnectionEntity = {
           ...connectionData,
           id,
+          connectionType: 'execution', // Default to execution for valid connections
           createdAt: new Date(),
         };
         
@@ -246,6 +314,42 @@ export const useBusinessStore = create<BusinessState>()(
           newConnections.delete(connectionId);
           return { workflowConnections: newConnections };
         });
+      },
+
+      // Helper Methods
+      getNodeEntity: (entityType, entityId) => {
+        const { aiModels, dataProcessors, annotations } = get();
+        
+        switch (entityType) {
+          case 'aiModel':
+            return aiModels.get(entityId);
+          case 'dataProcessor':
+            return dataProcessors.get(entityId);
+          case 'annotation':
+            return annotations.get(entityId);
+          default:
+            return undefined;
+        }
+      },
+
+      validateConnection: (sourceStepId, targetStepId) => {
+        const { workflowSteps } = get();
+        const sourceStep = workflowSteps.get(sourceStepId);
+        const targetStep = workflowSteps.get(targetStepId);
+        
+        if (!sourceStep || !targetStep) {
+          return { valid: false, reason: 'One or both steps do not exist' };
+        }
+        
+        // Only executable steps can participate in execution connections
+        if (!sourceStep.executable || !targetStep.executable) {
+          return { 
+            valid: false, 
+            reason: 'Both source and target steps must be executable to form an execution connection' 
+          };
+        }
+        
+        return { valid: true };
       },
     }),
     { name: 'business-store' }

@@ -53,12 +53,16 @@ export class WorkflowEngine {
       error?: string;
     }) => void
   ): Promise<WorkflowExecutionEntity> {
+    // 过滤出可执行步骤
+    const executableStepIds = workflow.steps.filter(step => step.executable).map(step => step.id);
+    
     // 创建执行记录
     const execution = await this.executionStore.createExecution({
       workflowId: workflow.id,
       status: 'pending',
       startTime: new Date(),
       input,
+      executableSteps: executableStepIds,
       createdAt: new Date(),
     });
     
@@ -102,7 +106,7 @@ export class WorkflowEngine {
     }
   }
   
-  // 构建执行图（拓扑排序）
+  // 构建执行图（拓扑排序）- 只考虑可执行步骤
   private buildExecutionGraph(
     steps: WorkflowStepEntity[],
     connections: WorkflowConnectionEntity[]
@@ -110,8 +114,9 @@ export class WorkflowEngine {
     const nodes = new Map<string, ExecutionNode>();
     const inDegree = new Map<string, number>();
     
-    // 初始化节点
-    steps.forEach(step => {
+    // 初始化节点 - 只包含可执行步骤
+    const executableSteps = steps.filter(step => step.executable);
+    executableSteps.forEach(step => {
       nodes.set(step.id, {
         step,
         dependencies: [],
@@ -120,17 +125,19 @@ export class WorkflowEngine {
       inDegree.set(step.id, 0);
     });
     
-    // 构建依赖关系
-    connections.forEach(connection => {
-      const sourceNode = nodes.get(connection.sourceStepId);
-      const targetNode = nodes.get(connection.targetStepId);
-      
-      if (sourceNode && targetNode) {
-        sourceNode.dependents.push(connection.targetStepId);
-        targetNode.dependencies.push(connection.sourceStepId);
-        inDegree.set(connection.targetStepId, (inDegree.get(connection.targetStepId) || 0) + 1);
-      }
-    });
+    // 构建依赖关系 - 只考虑可执行步骤之间的连接
+    connections
+      .filter(connection => connection.connectionType === 'execution')
+      .forEach(connection => {
+        const sourceNode = nodes.get(connection.sourceStepId);
+        const targetNode = nodes.get(connection.targetStepId);
+        
+        if (sourceNode && targetNode) {
+          sourceNode.dependents.push(connection.targetStepId);
+          targetNode.dependencies.push(connection.sourceStepId);
+          inDegree.set(connection.targetStepId, (inDegree.get(connection.targetStepId) || 0) + 1);
+        }
+      });
     
     // 拓扑排序
     const queue: string[] = [];
@@ -160,7 +167,7 @@ export class WorkflowEngine {
     }
     
     // 检查是否有循环依赖
-    if (result.length !== steps.length) {
+    if (result.length !== executableSteps.length) {
       throw new Error('Circular dependency detected in workflow');
     }
     
