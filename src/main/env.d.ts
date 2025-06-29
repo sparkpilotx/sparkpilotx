@@ -20,6 +20,9 @@ interface ImportMetaEnv {
   readonly MAIN_VITE_GOOGLE_CLOUD_PROJECT: string
   readonly MAIN_VITE_GOOGLE_CLOUD_LOCATION: string
   readonly MAIN_VITE_GOOGLE_GENAI_USE_VERTEXAI: string
+  readonly MAIN_VITE_DEFAULT_GEMINI_MODEL: string
+  readonly MAIN_VITE_DEFAULT_GEMINI_FLASH_MODEL: string
+  readonly MAIN_VITE_DEFAULT_GEMINI_EMBEDDING_MODEL: string
 
   // more env variables...
 }
