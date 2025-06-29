@@ -1,16 +1,14 @@
-import { app, shell, BrowserWindow, nativeTheme } from 'electron'
 import { join } from 'path'
+import { app, shell, BrowserWindow, nativeTheme } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
-import { registerIpcHandlers, unregisterIpcHandlers } from './ipc'
+import { initializeGlobalIpcHandlers, cleanupGlobalIpcHandlers } from './ipc'
 import { initializeGlobalProxy } from './config/proxy'
 import { createAppMenu } from './menu'
+import icon from '../../resources/icon.png?asset'
 
 const RENDERER_URL = process.env['ELECTRON_RENDERER_URL']
 
 let mainWindow: BrowserWindow
-
-
 
 function createWindow(): void {
   // Create the browser window.
@@ -80,7 +78,7 @@ if (!app.requestSingleInstanceLock()) {
       optimizer.watchWindowShortcuts(window)
     })
 
-    registerIpcHandlers()
+    initializeGlobalIpcHandlers()
 
     createWindow()
     createAppMenu(mainWindow)
@@ -105,7 +103,7 @@ app.on('window-all-closed', () => {
 // Clean up IPC handlers before the app quits
 app.on('before-quit', () => {
   try {
-    unregisterIpcHandlers()
+    cleanupGlobalIpcHandlers()
   } catch (error) {
     console.error('Error during IPC cleanup on app quit:', error)
   }

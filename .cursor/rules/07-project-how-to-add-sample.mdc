@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# How to Add New Samples
+
+This project uses automatic sample registration. To add a new sample:
+
+## 1. Create Sample Component
+Create a new directory under `src/renderer/src/samples/your-sample-name/` with an `index.tsx` file that exports a default React component.
+
+**That's it!** The sample will be automatically registered.
+
+## 2. Configure Sample
+Set `VITE_CURRENT_SAMPLE="your-sample-name"` in your `.env` file to activate the new sample.
+
+## How Auto-Registration Works
+- [App.tsx](mdc:src/renderer/src/App.tsx) uses `import.meta.glob('./samples/*/index.tsx')` to auto-discover samples
+- Directory name becomes the sample key (e.g., `samples/my-sample/` → `VITE_CURRENT_SAMPLE="my-sample"`)
+- Manual samples like `workflow` are still supported for samples outside the `samples/` directory
+
+## Current Sample Structure
+- **Auto-registered**: All directories in `src/renderer/src/samples/`
+- **Manual samples**: `workflow` (from workflow directory)
+- **Config**: Environment variable `VITE_CURRENT_SAMPLE` controls which sample loads
+- **Example**: [placeholder sample](mdc:src/renderer/src/samples/placeholder/index.tsx)

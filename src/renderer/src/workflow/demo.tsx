@@ -14,4 +14,7 @@ export function WorkflowDemo() {
       <WorkflowEditor />
     </div>
   );
-} 
+}
+
+// Default export for lazy loading compatibility
+export default WorkflowDemo; 

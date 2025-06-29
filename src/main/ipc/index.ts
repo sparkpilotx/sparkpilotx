@@ -1,9 +1,9 @@
 // Store cleanup functions for all handlers
 const handlerCleanups: (() => void)[] = []
 
-export function registerIpcHandlers(): void {
+export function initializeGlobalIpcHandlers(): void {
   // Clear any existing handlers first
-  unregisterIpcHandlers()
+  cleanupGlobalIpcHandlers()
   
   // Register all handlers and store their cleanup functions
   // Note: Theme handler removed as we now use CSS media queries in renderer
@@ -12,7 +12,7 @@ export function registerIpcHandlers(): void {
   // )
 }
 
-export function unregisterIpcHandlers(): void {
+export function cleanupGlobalIpcHandlers(): void {
   // Clean up all registered handlers
   handlerCleanups.forEach(cleanup => {
     try {
