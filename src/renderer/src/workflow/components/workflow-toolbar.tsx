@@ -23,12 +23,10 @@ export function WorkflowToolbar() {
     workflowSteps,
   } = useBusinessStore();
   
-  const { 
-    executions,
-    setCurrentExecution,
-    currentExecutionId,
+  const {
     updateStepStatus,
     clearStepStatuses,
+    setCurrentExecution,
   } = useExecutionStore();
   
   const handleAddAIModel = () => {

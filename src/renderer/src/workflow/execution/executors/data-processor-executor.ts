@@ -9,14 +9,14 @@ export class DataProcessorExecutor implements StepExecutor {
   }
 
   async execute(
-    step: WorkflowStepEntity,
+    _step: WorkflowStepEntity,
     entity: DataProcessorEntity,
     context: ExecutionContext
   ): Promise<Record<string, unknown>> {
     console.log(`🔄 Executing data processor: ${entity.name} (${entity.type})`);
     
     // 获取输入数据
-    const inputData = this.prepareInputData(step, context);
+    const inputData = this.prepareInputData(context);
     
     // 根据处理器类型执行不同的操作
     const result = await this.processData(entity, inputData);
@@ -26,14 +26,12 @@ export class DataProcessorExecutor implements StepExecutor {
   }
 
   private prepareInputData(
-    step: WorkflowStepEntity,
     context: ExecutionContext
   ): Record<string, unknown> {
-    // 从上下文中获取输入数据
-    let inputData = { ...context.input };
+    let inputData: Record<string, unknown> = { ...context.input };
     
     // 合并来自前置步骤的输出
-    context.stepOutputs.forEach((output, stepId) => {
+    context.stepOutputs.forEach((output, _stepId) => {
       inputData = { ...inputData, ...output };
     });
     
@@ -66,7 +64,7 @@ export class DataProcessorExecutor implements StepExecutor {
     processor: DataProcessorEntity
   ): Record<string, unknown> {
     // 简单的过滤逻辑示例
-    const filtered = Object.entries(data).filter(([key, value]) => {
+    const filtered = Object.entries(data).filter(([_key, value]) => {
       // 过滤掉空值和未定义值
       return value !== null && value !== undefined && value !== '';
     });

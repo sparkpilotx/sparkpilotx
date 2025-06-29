@@ -2,10 +2,9 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
+import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import type { OnNodesChange, OnEdgesChange, OnConnect } from '@xyflow/react';
 import type { RenderNode, RenderEdge } from '../adapters/business-to-render';
-import { useBusinessStore } from './business-store';
 
 interface RenderState {
   // Pure Render Data - React Flow的数据源
@@ -14,7 +13,7 @@ interface RenderState {
   
   // React Flow Event Handlers
   onNodesChange: OnNodesChange<RenderNode>;
-  onEdgesChange: OnEdgesChange;
+  onEdgesChange: OnEdgesChange<RenderEdge>;
   onConnect: OnConnect;
   onNodeDoubleClick: (event: React.MouseEvent, node: RenderNode) => void;
   onPaneClick: (event: React.MouseEvent) => void;
@@ -32,10 +31,6 @@ interface RenderState {
   
   // Sync from Business Layer
   syncFromBusiness: (nodes: RenderNode[], edges: RenderEdge[]) => void;
-  
-  // Business Integration
-  setBusinessStore: (businessStore: ReturnType<typeof useBusinessStore>) => void;
-  businessStore?: ReturnType<typeof useBusinessStore>;
 }
 
 export const useRenderStore = create<RenderState>()(
@@ -49,8 +44,6 @@ export const useRenderStore = create<RenderState>()(
       
       // React Flow Event Handlers
       onNodesChange: (changes) => {
-        const { businessStore } = get();
-        
         // Apply visual changes first
         set((state) => ({
           nodes: applyNodeChanges(changes, state.nodes),
@@ -60,19 +53,11 @@ export const useRenderStore = create<RenderState>()(
         changes.forEach((change) => {
           switch (change.type) {
             case 'position':
-              if (change.position && businessStore) {
-                // Update business layer with new position
-                businessStore.getState().updateWorkflowStep(change.id, {
-                  position: change.position,
-                });
-              }
+              // Position updates are handled by the business layer through sync
               break;
               
             case 'remove':
-              if (businessStore) {
-                // Remove from business layer
-                businessStore.getState().deleteWorkflowStep(change.id);
-              }
+              // Remove operations are handled by the business layer through sync
               break;
               
             case 'select':
@@ -88,8 +73,6 @@ export const useRenderStore = create<RenderState>()(
       },
       
       onEdgesChange: (changes) => {
-        const { businessStore } = get();
-        
         // Apply visual changes
         set((state) => ({
           edges: applyEdgeChanges(changes, state.edges),
@@ -99,9 +82,7 @@ export const useRenderStore = create<RenderState>()(
         changes.forEach((change) => {
           switch (change.type) {
             case 'remove':
-              if (businessStore) {
-                businessStore.getState().deleteWorkflowConnection(change.id);
-              }
+              // Remove operations are handled by the business layer through sync
               break;
               
             case 'select':
@@ -116,32 +97,19 @@ export const useRenderStore = create<RenderState>()(
       },
       
       onConnect: (connection) => {
-        const { businessStore } = get();
-        
-        if (businessStore && connection.source && connection.target) {
-          // Add to business layer first
-          const connectionId = businessStore.getState().addWorkflowConnection({
-            workflowId: businessStore.getState().currentWorkflowId || '',
-            sourceStepId: connection.source,
-            targetStepId: connection.target,
-            sourceHandle: connection.sourceHandle || 'default',
-            targetHandle: connection.targetHandle || 'default',
-          });
-          
-          // Visual update will happen through sync
-        } else {
-          // Fallback: add to render layer only - but we should avoid this
-          console.warn('No business store available for connection');
+        if (connection.source && connection.target) {
+          // Connection logic is handled by the workflow editor component
+          console.log('Connection attempt:', connection);
         }
       },
       
-      onNodeDoubleClick: (event, node) => {
+      onNodeDoubleClick: (_event, node) => {
         // Trigger node editing
         console.log('Edit node:', node.id);
         // This will be handled by individual node renderers
       },
       
-      onPaneClick: (event) => {
+      onPaneClick: (_event) => {
         // Clear selection
         set({ selectedNodes: [], selectedEdges: [] });
       },
@@ -171,14 +139,9 @@ export const useRenderStore = create<RenderState>()(
         set({ selectedEdges: edgeIds });
       },
       
-      // Sync from Business Layer - Simple and reliable sync
+      // Sync from Business Layer
       syncFromBusiness: (nodes, edges) => {
         set({ nodes, edges });
-      },
-      
-      // Business Integration
-      setBusinessStore: (businessStore) => {
-        set({ businessStore });
       },
     }),
     { name: 'render-store' }

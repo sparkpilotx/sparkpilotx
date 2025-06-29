@@ -272,7 +272,7 @@ export class WorkflowEngine {
   
   // 准备步骤输入数据
   private prepareStepInput(
-    step: WorkflowStepEntity,
+    _step: WorkflowStepEntity,
     context: ExecutionContext
   ): Record<string, unknown> {
     // 从依赖步骤收集输入数据

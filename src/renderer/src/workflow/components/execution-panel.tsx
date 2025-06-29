@@ -1,6 +1,6 @@
 // 工作流执行面板 - 显示执行历史和状态
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useExecutionStore } from '../execution/execution-store';
 import { useBusinessStore } from '../stores/business-store';
 import type { WorkflowExecutionEntity } from '../domain/entities';
@@ -11,7 +11,6 @@ export function ExecutionPanel() {
     executions, 
     currentExecutionId,
     setCurrentExecution,
-    getExecutionLogs,
   } = useExecutionStore();
   
   const { currentWorkflowId } = useBusinessStore();

@@ -8,11 +8,9 @@ import {
   Background,
   Controls,
   MiniMap,
-  useReactFlow,
   type FitViewOptions,
   type DefaultEdgeOptions,
   type Node,
-  type Edge,
   type Connection,
 } from '@xyflow/react';
 
@@ -48,7 +46,6 @@ export function WorkflowEditor() {
     edges,
     onNodesChange,
     onEdgesChange,
-    onConnect,
   } = useRenderStore();
   
   // 控制初始化时的 fitView
@@ -70,14 +67,12 @@ export function WorkflowEditor() {
   // 获取业务操作方法
   const {
     updateWorkflowStep,
-    deleteWorkflowStep,
     addWorkflowConnection,
-    deleteWorkflowConnection,
     currentWorkflowId,
   } = useBusinessStore();
   
   // Memoized event handlers to prevent unnecessary re-renders
-  const handleNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const handleNodeDoubleClick = useCallback((_event: React.MouseEvent, node: Node) => {
     console.log('Edit node:', node.id);
     // 这里可以打开节点编辑对话框
   }, []);
@@ -96,6 +91,7 @@ export function WorkflowEditor() {
         workflowId: currentWorkflowId,
         sourceStepId: connection.source,
         targetStepId: connection.target,
+        connectionType: 'execution',
         dataMapping: {}, // Empty mapping for now
       });
     }
